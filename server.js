@@ -32,6 +32,26 @@ app.get('/', (req, res) => {
 
 });
 
+// Define a route to handle image requests
+app.get('/getImage', (req, res) => {
+  // Get the image number from the query parameter (default to 1)
+  const imageNumber = req.query.id || 1;
+  var imagePath;
+  console.log(imageNumber)
+  if (imageNumber == 1){
+    imagePath = path.join(__dirname, 'assets', "CassandraAdkins.jpg");
+  }
+  else if(imageNumber == 2){
+    imagePath = path.join(__dirname, 'assets', "LilianErikson.jpg")
+  }
+  else{
+    return res.status(404).send('Image not found');
+  }
+  console.log(imagePath)
+  
+  res.sendFile(imagePath);
+});
+
 const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io')(server,{
@@ -80,6 +100,12 @@ io.on("connection", socket => {
 
   socket.on('gameStarted', (chosenRoom) => {
     console.log('Game has been started')
+  })
+
+  socket.on('characterRequest', (characterId) =>{
+    //Check the ID to the character
+    console.log('In here')
+    //io.to(socket.id).emit('getCharacter', 'assets/CassandraAdkins.jpg')
   })
 
   socket.on('logoutRoom', async () => {

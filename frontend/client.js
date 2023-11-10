@@ -8,6 +8,7 @@ var chosenRoom;
 var currentBackground;
 var isHost = false;
 
+
 socket.on("connect", () => {
   console.log('Connected to socket!')
 });
@@ -21,6 +22,11 @@ socket.on("makeHost", () => {
   document.getElementById("startButton").hidden = false;
   isHost = true;
 });
+
+socket.on("getCharacter", (imageSrc) => {
+  console.log('Got Character Image')
+  document.getElementById('image').src = imageSrc
+})
 
 startButton.addEventListener('click', () => {  
       socket.emit('gameStarted', chosenRoom)
@@ -39,6 +45,32 @@ joinButton.addEventListener('click', async () => {
     await joinRoom();
   })
 
+characterIdSubmit.addEventListener('click', () => {
+    var characterId = document.getElementById('characterId').value
+    console.log('clicked button')
+    //socket.emit('characterRequest', characterId)
+
+    fetch(`/getImage?id=${characterId}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP Error! Status: ${response.status}`);
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      // Create an object URL for the blob
+      const objectURL = URL.createObjectURL(blob);
+      // Set the image source
+      document.getElementById('image').src = objectURL;
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+
+    //Send value to Server
+    //Server will emit socket response with the PDF page number
+})
+
 logoutButton.addEventListener('click', async () => { 
     await logout();
     backToMainScreen();
@@ -54,6 +86,9 @@ function hideRoomValues(){
   //Displays the Active Room number
   document.getElementById("activeRoom").hidden = false;
   document.getElementById("activeRoom").innerHTML = "Room Name: " + String(chosenRoom);
+  document.getElementById("characterIdForm").hidden = false;
+  document.getElementById("characterIdSubmit").hidden = false;
+
 
   //Reveals the logoutButton button and the logout button
   document.getElementById("logoutButton").hidden = false;
@@ -78,6 +113,7 @@ function backToMainScreen(){
   document.getElementById("startButton").hidden = true;
   document.getElementById("logoutButton").hidden = true;
   document.getElementById("countOfUsers").hidden = true;
+  document.getElementById("characterIdForm").hidden = true;
 
 }
 
