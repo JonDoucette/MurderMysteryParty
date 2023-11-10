@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name = "viewport" content="width=device-width initial-scale=1.0"
+        <title> </title>
+
+        <link rel="stylesheet" href="stylesheets/main.css">
+        
+        <script defer src="https://cdn.socket.io/4.2.0/socket.io.min.js"></script>
+        <script defer src="client.js"></script>
+
+        
+    </head>
+    <nav class="navi">
+        <ul class= "navi-list">
+            <li class="titleHeader centered-logo">Murder Mystery Party</li>   
+        </ul>
+    </nav> 
+    
+        <body></body>
+        <div class="loginDiv">
+            <center>
+            <center><p id="activeRoom" class="activeRoom" hidden>Active Room</p></center>
+                <form> 
+                    <label class="roomNameLabel" for="roomSub" id="roomLabel">Room Number</label>
+                    <p id="countOfUsers" hidden></p>
+                    <br>
+                    <input type="text" id="roomNum" name="roomSub">
+               </form>
+            </center>
+            <center>
+                <div>
+                    <button class="bouncy" id ="hostButton">Host</button>
+                    <button class="bouncy" id ="joinButton">Join</button>
+                </div>
+            </center>
+        </div>
+
+        <div></div>
+        <div class="button-container">
+            <button id ="startButton" hidden>Start Game</button>
+            <button id="logoutButton" hidden>Logout</button>
+        </div>
+
+    </body>
+
+</html>
