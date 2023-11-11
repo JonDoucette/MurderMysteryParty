@@ -23,6 +23,11 @@ socket.on("makeHost", async () => {
   makeHost();
   isHost = true;
 });
+socket.on("denyHost", async () => {
+  console.log('Host is already taken')
+  document.getElementById('hostAlert').style.display='block'
+  isHost = false;
+});
 
 socket.on("getCharacter", (imageSrc) => {
   console.log('Got Character Image')
@@ -63,6 +68,7 @@ characterIdSubmit.addEventListener('click', () => {
       const objectURL = URL.createObjectURL(blob);
       // Set the image source
       document.getElementById('image').src = objectURL;
+      document.getElementById('image').hidden = false;
     })
     .catch(error => {
       console.error('Fetch error:', error);
@@ -117,6 +123,7 @@ function backToMainScreen(){
   document.getElementById("characterIdSubmit").hidden = true;
   document.getElementById('hostDiv').hidden = true;
   document.getElementById('hostTableBody').innerHTML = '';
+  document.getElementById('image').hidden = true;
 
 }
 
