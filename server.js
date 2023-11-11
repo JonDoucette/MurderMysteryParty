@@ -161,7 +161,10 @@ async function joinRoom(socket, data){
 
 async function requestHost(socket, data){
     console.log(socket.id + ' is requesting to host socket: ' + data);
-    if (Object.values(roomHosts).includes(data)) console.log("Host is already taken")    
+    if (Object.values(roomHosts).includes(data)){
+      console.log("Host is already taken")  
+      io.to(socket.id).emit('denyHost')
+    }   
     else{
         console.log("Creating new host")
         socket.join(data);

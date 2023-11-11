@@ -2,23 +2,23 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name = "viewport" content="width=device-width initial-scale=1.0"
-        <title> </title>
+        <meta name = "viewport" content="width=device-width initial-scale=1.0">
 
-        <link rel="stylesheet" href="stylesheets/main.css">
-        
+        <link rel="stylesheet" type="text/css" href="main.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kantumruy+Pro">
+
         <script defer src="https://cdn.socket.io/4.2.0/socket.io.min.js"></script>
         <script defer src="client.js"></script>
-        <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
         
     </head>
-    <nav class="navi">
-        <ul class= "navi-list">
-            <li class="titleHeader centered-logo">Murder Mystery Party</li>   
-        </ul>
-    </nav> 
-    
-        <body></body>
+    <body>
+    <div class="alert" id="hostAlert" style="display: none;">
+        <span class="closebtn" onclick=this.parentElement.style.display='none'>×</span>  
+        <strong>Error!</strong> Unable to make you the host, there already may be a host for that room.
+    </div>
+    <div class="titleHeader">
+        <center><h1>Murder Mystery Party</h1></center>
+    </div>
         <div class="loginDiv">
             <center>
             <center><p id="activeRoom" class="activeRoom" hidden>Room Name:</p></center>
@@ -32,7 +32,7 @@
 
             
                 <form> 
-                    <label class="roomNameLabel" for="roomSub" id="roomLabel">Room Number</label>
+                    <label class="roomNameLabel" for="roomSub" id="roomLabel">Room Name</label>
                     <p id="countOfUsers" hidden></p>
                     <br>
                     <input type="text" id="roomNum" name="roomSub">
@@ -40,15 +40,15 @@
             </center>
             <center>
                 <div>
-                    <button class="bouncy" id ="hostButton">Host</button>
-                    <button class="bouncy" id ="joinButton">Join</button>
+                    <button id ="hostButton">Host</button>
+                    <button id ="joinButton">Join</button>
                 </div>
             </center>
         </div>
 
         <div></div>
         <div id="hostDiv" hidden>
-            <table id="hostTable" style="width:50%">
+            <table id="hostTable">
                 <thead>
                     <tr>
                         <th>
@@ -69,6 +69,7 @@
         </div>
 
         <img id="image" src="">
+
         </body>
 
 
