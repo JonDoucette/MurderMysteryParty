@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 var cors = require('cors')
+var characterJson = require('./listOfCharacters.json')
 
 app.use(cors())
 
@@ -33,23 +34,52 @@ app.get('/', (req, res) => {
 });
 
 // Define a route to handle image requests
-app.get('/getImage', (req, res) => {
+app.get('/getImage', async (req, res) => {
   // Get the image number from the query parameter (default to 1)
-  const imageNumber = req.query.id || 1;
+  const charId = parseInt(req.query.id) || 1;
+  const room = req.query.room;
   var imagePath;
-  console.log(imageNumber)
-  if (imageNumber == 1){
-    imagePath = path.join(__dirname, 'assets', "CassandraAdkins.jpg");
+  if (!validCharId(charId, room)){
+    return res.status(404).send('No valid character with that ID found');
+  };
+
+  var char = getCharName(charId, room);
+  char = char.replace(' ', '') + '.jpg'
+  try {
+    imagePath = path.join(__dirname, 'assets', char);
+  } catch (error) {
+    return res.status(500).send('Image not found on server side');
   }
-  else if(imageNumber == 2){
-    imagePath = path.join(__dirname, 'assets', "LilianErikson.jpg")
-  }
-  else{
-    return res.status(404).send('Image not found');
-  }
-  console.log(imagePath)
   
   res.sendFile(imagePath);
+});
+//getCharacters?id=${chosenRoom}
+app.get('/getCharacters', async (req, res) => {
+  // Get the image number from the query parameter (default to 1)
+  const roomId = req.query.id || 1;
+  let isHost = req.query.host;
+  console.log(isHost)
+
+  let characterIdMapping = {}
+
+  if(!isHost) return res.status(403).send('You are not the host')
+  if (!validRoomId(roomId)) return res.status(404).send('Not a valid room number')
+
+  if (Object.keys(characterMappings).includes(roomId)) res.json(characterMappings[roomId])
+  else{
+    for(character in characterJson){
+      //Generate 5 digit Ids until a new Id (not currently used) is generated
+      do {
+        id = Math.floor(Math.random()*90000) + 10000;
+      } 
+      while (Object.values(characterIdMapping).includes(id))
+      characterIdMapping[characterJson[character]] = id
+  
+    }
+    characterMappings[roomId] = characterIdMapping
+    res.json(characterIdMapping)
+  }
+
 });
 
 const http = require('http');
@@ -76,7 +106,7 @@ app.use(express.static(htmlPath))
 //Socket commands from client
 var roomHosts = {};
 var roomLocation = {};
-
+var characterMappings = {}
 
 //app.use(cors())
 //app.options('*', cors())
@@ -156,4 +186,25 @@ async function userDisconnect(socket){
         if (Object.keys(roomHosts).includes(socket.id)) delete roomHosts[socket.id]
     }
 
+}
+
+function validRoomId(room){
+  console.log(roomLocation)
+  return Object.values(roomLocation).includes(room)
+}
+
+function validCharId(id, room){
+  let charMapping = characterMappings[room];
+  if (!charMapping) return false
+  return Object.values(charMapping).includes(parseInt(id));
+} 
+
+function getCharName(id, room){
+  var charMapping = characterMappings[room];
+  if (!charMapping) return false
+  return getKeyByValue(charMapping, id)[0]
+}
+
+function getKeyByValue(object, value) {
+  return Object.keys(object).filter(key => object[key] == value);
 }

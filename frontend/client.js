@@ -18,8 +18,9 @@ socket.on("message", data => {
   console.log(data);
 });
 
-socket.on("makeHost", () => {
-  document.getElementById("startButton").hidden = false;
+socket.on("makeHost", async () => {
+  hideRoomValues()
+  makeHost();
   isHost = true;
 });
 
@@ -28,7 +29,8 @@ socket.on("getCharacter", (imageSrc) => {
   document.getElementById('image').src = imageSrc
 })
 
-startButton.addEventListener('click', () => {  
+startButton.addEventListener('click', async () => {  
+      await generateHostTable();
       socket.emit('gameStarted', chosenRoom)
 })
 
@@ -37,7 +39,6 @@ hostButton.addEventListener('click', () => {
   if (chosenRoom === ""){console.log('No Room to join');} 
   else{
     socket.emit('requestHost', chosenRoom);
-    hideRoomValues();
   }
 })
 
@@ -50,7 +51,7 @@ characterIdSubmit.addEventListener('click', () => {
     console.log('clicked button')
     //socket.emit('characterRequest', characterId)
 
-    fetch(`/getImage?id=${characterId}`)
+    fetch(`/getImage?id=${characterId}&room=${chosenRoom}`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP Error! Status: ${response.status}`);
@@ -78,6 +79,7 @@ logoutButton.addEventListener('click', async () => {
 
 //Hides the room submission values when client joins a room
 function hideRoomValues(){
+
   document.getElementById("hostButton").hidden = true;
   document.getElementById("joinButton").hidden = true;
   document.getElementById("roomLabel").hidden = true; 
@@ -94,8 +96,6 @@ function hideRoomValues(){
   document.getElementById("logoutButton").hidden = false;
   document.getElementById("countOfUsers").hidden = false;
 
-  //Reveals the role card container
-  // document.getElementById("roleCardContainer").style.display = "flex";
 }
 
 function backToMainScreen(){
@@ -114,7 +114,36 @@ function backToMainScreen(){
   document.getElementById("logoutButton").hidden = true;
   document.getElementById("countOfUsers").hidden = true;
   document.getElementById("characterIdForm").hidden = true;
+  document.getElementById("characterIdSubmit").hidden = true;
+  document.getElementById('hostDiv').hidden = true;
+  document.getElementById('hostTableBody').innerHTML = '';
 
+}
+
+function makeHost(){
+  document.getElementById("startButton").hidden = false;
+  document.getElementById("characterIdForm").hidden = true;
+  document.getElementById("characterIdSubmit").hidden = true;
+}
+
+async function generateHostTable(){
+  console.log('Generating table')
+
+  let result = await fetch(`/getCharacters?id=${chosenRoom}&host=${isHost}`)
+  const characterDictionary = await result.json();
+  let table = document.getElementById('hostTable').getElementsByTagName('tbody')[0];
+
+  for (const [key, value] of Object.entries(characterDictionary)) {
+    row = table.insertRow();
+
+    characterCell = row.insertCell();
+    idCell = row.insertCell();
+    characterCell.textContent = key;
+    idCell.textContent = value
+  }
+
+  document.getElementById('hostDiv').hidden = false;
+  document.getElementById('startButton').hidden = true;
 }
 
 async function joinRoom()
