@@ -5,29 +5,31 @@ var characterJson = require('./listOfCharacters.json')
 
 app.use(cors())
 
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", '*');
-//   res.header("Access-Control-Allow-Credentials", true);
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-//   res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
-//   if (req.method === 'OPTIONS') {
+app.options('*', cors())
 
-//     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, OPTIONS');
-//     res.header('Access-Control-Max-Age', 120);
-//     return res.status(200).json({});
-// }
-//   next();
-// });
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", '*');
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+  if (req.method === 'OPTIONS') {
+
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Max-Age', 120);
+    return res.status(200).json({});
+}
+  next();
+});
 
 
 //Allow for CORS to get in
-// app.all('*', function(req, res, next) {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   res.header("Access-Control-Allow-Credentials", true);
-//   next();
-// });
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header("Access-Control-Allow-Credentials", true);
+  next();
+});
 app.get('/', (req, res) => {
   res.sendFile('/frontend/', {root: __dirname });
 
@@ -48,7 +50,7 @@ app.get('/getImage', async (req, res) => {
   var char = charAndPart[0]
   var part = charAndPart[1] + 1
   console.log(char)
-  char = char.replace(' ', '') + part + '.jpg'
+  char = char.replace(' ', '') + part + '.pdf'
   try {
     imagePath = path.join(__dirname, 'assets', char);
   } catch (error) {
@@ -91,7 +93,7 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io')(server,{
   cors: {
-    origin: true,
+    origin: '*',
     methods: ["GET", "POST"],
     allowedHeaders: ['Access-Control-Allow-Private-Network: true', 'Access-Control-Allow-Origin: *'],
 
@@ -154,7 +156,7 @@ io.on("connection", socket => {
 });
 
 
-server.listen(process.env.PORT || 3000, () => {
+server.listen(3000, "0.0.0.0", () => {
   console.log(`listening on *:${process.env.PORT || 3000}`);
 });
 

@@ -1,8 +1,8 @@
 //Establishing a connection with the server on port 3000
-const socket = io('http://localhost:3000');
+//const socket = io('http://localhost:3000');
 
 //heroku server
-//const socket = io("https://serene-peak-32376.herokuapp.com/");
+const socket = io("https://murdermysterysite.fly.dev/");
 
 var chosenRoom;
 var currentBackground;
@@ -68,7 +68,7 @@ characterIdSubmit.addEventListener('click', () => {
       const objectURL = URL.createObjectURL(blob);
       // Set the image source
       document.getElementById('image').src = objectURL;
-      document.getElementById('image').hidden = false;
+      document.getElementById('image1').hidden = false;
     })
     .catch(error => {
       console.error('Fetch error:', error);
@@ -124,6 +124,7 @@ function backToMainScreen(){
   document.getElementById('hostDiv').hidden = true;
   document.getElementById('hostTableBody').innerHTML = '';
   document.getElementById('image').hidden = true;
+  document.getElementById('image1').hidden = true;
 
 }
 
@@ -172,3 +173,12 @@ async function logout(){
     console.log('Logging out of the room')
     socket.emit('logoutRoom', chosenRoom);
 }
+
+document.getElementById('download').addEventListener('click', function() {
+  var link = document.createElement('a');
+  link.href = document.getElementById('image').src // Replace with your PDF file path
+  link.download = link.href; // Replace with desired file name
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
