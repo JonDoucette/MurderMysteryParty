@@ -5,6 +5,8 @@ A Murder Mystery website to give out Murder Mystery Character files to players
 This website utilizing Node.JS helps to host and run Murder Mystery Games without requiring the printing out of pages for each and every user.
 In the files contains a list of characters, with those characters, the host can generate random Ids for each of those characters. Then they can give out the Ids to the players that are playing that character. The players will then enter in the ID in order to get their character information.
 
+This was built as an exercise to solve a specific problem over the course of a weekend.
+
 ### Screenshots
 Main Screen:
 
