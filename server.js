@@ -43,8 +43,12 @@ app.get('/getImage', async (req, res) => {
     return res.status(404).send('No valid character with that ID found');
   };
 
-  var char = getCharName(charId, room);
-  char = char.replace(' ', '') + '.jpg'
+  var charAndPart = getCharName(charId, room);
+  console.log(charAndPart)
+  var char = charAndPart[0]
+  var part = charAndPart[1] + 1
+  console.log(char)
+  char = char.replace(' ', '') + part + '.jpg'
   try {
     imagePath = path.join(__dirname, 'assets', char);
   } catch (error) {
@@ -71,10 +75,11 @@ app.get('/getCharacters', async (req, res) => {
       //Generate 5 digit Ids until a new Id (not currently used) is generated
       do {
         id = Math.floor(Math.random()*90000) + 10000;
+        part2Id = Math.floor(Math.random()*90000) + 10000;
       } 
-      while (Object.values(characterIdMapping).includes(id))
-      characterIdMapping[characterJson[character]] = id
-  
+      while (isValueInNestedArrays(id, Object.values(characterIdMapping)) || isValueInNestedArrays(part2Id, Object.values(characterIdMapping)))
+      characterIdMapping[characterJson[character]] = [id, part2Id]
+
     }
     characterMappings[roomId] = characterIdMapping
     res.json(characterIdMapping)
@@ -199,15 +204,47 @@ function validRoomId(room){
 function validCharId(id, room){
   let charMapping = characterMappings[room];
   if (!charMapping) return false
-  return Object.values(charMapping).includes(parseInt(id));
+  console.log("is Valid ID: ")
+  console.log(isValueInNestedArrays(id, Object.values(charMapping)))
+  return isValueInNestedArrays(id, Object.values(charMapping));
 } 
 
 function getCharName(id, room){
   var charMapping = characterMappings[room];
+  console.log(charMapping)
   if (!charMapping) return false
-  return getKeyByValue(charMapping, id)[0]
+  return getCharByValue(charMapping, id)
 }
 
-function getKeyByValue(object, value) {
-  return Object.keys(object).filter(key => object[key] == value);
+function getCharByValue(object, value) {
+  charValues = findArrayWithValue(value, object)
+  index = charValues[0]
+  charNum = charValues[1]
+  return [Object.keys(object)[charNum], index]; 
+  //Must return [Cassandra Adkins, 1] for part 2 id
+}
+
+function isValueInNestedArrays(value, nestedArray) {
+  for (let i = 0; i < nestedArray.length; i++) {
+    const innerArray = nestedArray[i];
+    if (innerArray.includes(value)) {
+      return true; // Value found in one of the inner arrays
+    }
+  }
+  return false; // Value not found in any inner array
+}
+
+function findArrayWithValue(search, array) {
+  var char = -1;
+  console.log(array)
+  for (const [key, value] of Object.entries(array)) {
+    console.log(value)
+    char++;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] == search) {
+        return [i, char]; // Returns the index of the array containing the value
+      }
+    }
+  }
+  return -1;
 }

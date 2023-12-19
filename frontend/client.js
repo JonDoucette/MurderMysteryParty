@@ -145,8 +145,10 @@ async function generateHostTable(){
 
     characterCell = row.insertCell();
     idCell = row.insertCell();
+    part2IdCell = row.insertCell();
     characterCell.textContent = key;
-    idCell.textContent = value
+    idCell.textContent = value[0]
+    part2IdCell.textContent = value[1]
   }
 
   document.getElementById('hostDiv').hidden = false;
